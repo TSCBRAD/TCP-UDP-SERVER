@@ -1,3 +1,7 @@
-# CMake build directory
+# Directories
 build/
 conanbuild/
+
+# Files
+.CMakeLists.txt.swp
+CMakeUserPresets.json
