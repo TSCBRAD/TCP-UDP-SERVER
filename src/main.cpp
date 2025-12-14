@@ -31,7 +31,7 @@ int main() {
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        log_message("Socket failed");
+        log("Socket failed");
         return -1;
     }
     
@@ -39,13 +39,13 @@ int main() {
 
     // Set socket options
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        log_message("Setsockopt failed");
+        log("Setsockopt failed");
         return -1;
     }
 
     int state = 1;
     if(setsockopt(server_fd, IPPROTO_TCP, TCP_CORK, &state, sizeof(state)) < 0) {
-       log_message("TCP CORK FAILED");
+       log("TCP CORK FAILED");
        return -1;
     }
 
@@ -55,13 +55,13 @@ int main() {
 
     // Bind the socket to the address
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
-        log_message("Bind failed");
+        log("Bind failed");
         return -1;
     }
 
     // Listen for incoming connections (1 client)
     if (listen(server_fd, 1) < 0) {
-        log_message("Listen failed");
+        log("Listen failed");
         return -1;
     }
 
@@ -69,7 +69,7 @@ int main() {
 
     // Accept the incoming connection
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
-        log_message("Accept failed");
+        log("Accept failed");
         return -1;
     }
 
@@ -89,7 +89,7 @@ int main() {
 
     state = 0;
     if(setsockopt(server_fd, IPPROTO_TCP, TCP_CORK, &state, sizeof(state) < 0)) {
-       log_message("CORK DISABLED FAILED");
+       log("CORK DISABLED FAILED");
     }
 
 
