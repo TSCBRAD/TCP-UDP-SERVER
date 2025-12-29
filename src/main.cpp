@@ -1,4 +1,5 @@
 #include <cstring>
+#include <cstdio>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -12,9 +13,6 @@
 #include <string_view>
 #include "../include/log.h"
 #include "../include/addSub.h"
-
-
-#include <nlohmann/json.hpp>
 
 
 bool keep_running = true;
@@ -38,7 +36,6 @@ int main() {
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    int counter = 1;
 
     // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -84,7 +81,14 @@ int main() {
         return -1;
     }
 
-    std::cout << "Connection established with client." << std::endl;
+
+    // System command to check connection log
+
+    const char* cmd = "ss -tnp | grep :12345";
+
+    int UserCon = std::system(cmd);
+
+    std::cout << "USERS CONNECTED: " << UserCon; 
 
 
 
@@ -109,7 +113,7 @@ int main() {
             break; // If signal received to stop, break the loop
         }
 
-        std::string message = line + "\n";
+        const std::string message = line + "\n";
 
         ssize_t bytes_sent = send(new_socket, message.c_str(), message.length(), 0);
         if (bytes_sent < 0) {
@@ -147,7 +151,7 @@ int main() {
     }
 
 
-
+    file.close();
 
     // Clean up: Close the socket
     close(new_socket);
