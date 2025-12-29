@@ -6,11 +6,15 @@
 #include <signal.h>
 #include <iostream>
 #include <stdio.h>
+#include <fstream>
 #include <netinet/tcp.h>
 #include <source_location>
 #include <string_view>
-#include "log.h"
+#include "../include/log.h"
+#include "../include/addSub.h"
 
+
+#include <nlohmann/json.hpp>
 
 
 bool keep_running = true;
@@ -19,7 +23,14 @@ void signal_handler(int signum) {
     keep_running = false;
 }
 
+
+
 int main() {
+
+
+
+
+
     // Signal handler for clean exit on Ctrl+C (SIGINT)
     signal(SIGINT, signal_handler);
 
@@ -75,13 +86,56 @@ int main() {
 
     std::cout << "Connection established with client." << std::endl;
 
-    // Start broadcasting numbers
-    while (keep_running) {
-        std::string message = std::to_string(counter) + "\n";
-        send(new_socket, message.c_str(), message.length(), 0);
-        std::cout << "Sent: " << counter << std::endl;
-        counter++;
+
+
+
+
+
+
+    //*******************************************************************
+    // example market data simulations
+
+
+    std::ifstream file("resources/test.csv");
+
+    if (!file.is_open()) {
+        std::cerr << "ERROR: FAILED TO OPEN FILE" << std::endl;
+        return -1;
     }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        if (!keep_running) {
+            break; // If signal received to stop, break the loop
+        }
+
+        std::string message = line + "\n";
+
+        ssize_t bytes_sent = send(new_socket, message.c_str(), message.length(), 0);
+        if (bytes_sent < 0) {
+            std::cerr << "Send failed for message: " << message << std::endl;
+            break; // Exit the loop if sending fails
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //***************************************************************************
+
+    
+
 
     std::cout << "\nBroadcasting stopped." << std::endl;
 
@@ -101,4 +155,3 @@ int main() {
 
     return 0;
 }
-
